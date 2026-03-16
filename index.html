@@ -202,49 +202,41 @@ if(localStorage.getItem("currentUser")){document.getElementById("username").text
 if(localStorage.getItem("whitelisted")){unlockGames()}
 document.getElementById("gameSearch").addEventListener("input",function(e){let term=e.target.value.toLowerCase().trim(),cards=document.querySelectorAll(".gamecard"),count=0;cards.forEach(c=>{let title=c.querySelector(".gametitle").textContent.toLowerCase();if(term===""||title.includes(term)){c.classList.add("visible");count++}else{c.classList.remove("visible")}});document.getElementById("gamesCount").textContent=count});
 
-// ==================== PLAYER COUNT SYSTEM ====================
+// ==================== PLAYER COUNT SYSTEM (Your Real Fix) ====================
 const PLAYER_API = "https://games.roproxy.com/v1/games?universeIds=";
 
 function createPlayerBoxes(){
     document.querySelectorAll(".gamecard .gamecontent").forEach(content=>{
-        if(content.querySelector(".playerbox")) return;
+        if(content.querySelector(".playerbox"))return;
         const box=document.createElement("div");
         box.className="playerbox";
-        box.innerHTML=`
-            <i class="fa-solid fa-users"></i>
-            <span class="playercount">0</span>
-            <div class="playerdot"></div>
-        `;
+        box.innerHTML=`<i class="fa-solid fa-users"></i><span class="playercount">0</span><div class="playerdot"></div>`;
         content.appendChild(box);
     });
 }
 
 async function updatePlayerCounts(){
     const cards=document.querySelectorAll(".gamecard[data-universe]");
-    if(cards.length===0) return;
-
+    if(cards.length===0)return;
     const universeIds=[...new Set(Array.from(cards).map(c=>c.dataset.universe))].filter(id=>/^\d+$/.test(id));
-    if(universeIds.length===0) return;
-
+    if(universeIds.length===0)return;
     try{
         const res=await fetch(PLAYER_API+universeIds.join(","));
         const data=await res.json();
+        if(!data.data)return;
         const map={};
-        data.data.forEach(g=>{ map[g.id]=g.playing; });
-
-        cards.forEach(card => {
-            const id = card.dataset.universe;
-            const counter = card.querySelector(".playercount");
-            if(counter) counter.textContent = (map[Number(id)] ?? 0).toLocaleString();
+        data.data.forEach(game=>{map[String(game.id)]=game.playing});
+        cards.forEach(card=>{
+            const id=card.dataset.universe;
+            const counter=card.querySelector(".playercount");
+            if(counter)counter.textContent=(map[id]??0).toLocaleString();
         });
-    }catch(e){
-        console.log("Player API error",e);
-    }
+    }catch(e){}
 }
 
 createPlayerBoxes();
 updatePlayerCounts();
-setInterval(updatePlayerCounts, 3000);
+setInterval(updatePlayerCounts,3000);
 </script>
 </body>
-    </html>
+                </html>
