@@ -202,8 +202,8 @@ if(localStorage.getItem("currentUser")){document.getElementById("username").text
 if(localStorage.getItem("whitelisted")){unlockGames()}
 document.getElementById("gameSearch").addEventListener("input",function(e){let term=e.target.value.toLowerCase().trim(),cards=document.querySelectorAll(".gamecard"),count=0;cards.forEach(c=>{let title=c.querySelector(".gametitle").textContent.toLowerCase();if(term===""||title.includes(term)){c.classList.add("visible");count++}else{c.classList.remove("visible")}});document.getElementById("gamesCount").textContent=count});
 
-// ==================== PLAYER COUNT SYSTEM (Using your API) ====================
-const PLAYER_API = "/api/player-counts?universeIds=";
+// ==================== PLAYER COUNT SYSTEM ====================
+const PLAYER_API = "/api/playercounts?universeIds=";
 
 function createPlayerBoxes(){
     document.querySelectorAll(".gamecard .gamecontent").forEach(content=>{
@@ -223,21 +223,18 @@ async function updatePlayerCounts(){
 
     try{
         const res = await fetch(PLAYER_API + universeIds.join(","));
-        const json = await res.json();
-        if(!json.data) return;
+        const data = await res.json();
         const map = {};
-        json.data.forEach(game => {
-            map[String(game.id)] = game.playing ?? 0;
-        });
+        data.data.forEach(g => { map[g.id] = g.playing; });
 
         cards.forEach(card => {
             const id = card.dataset.universe;
             const counter = card.querySelector(".playercount");
-            if(counter){
-                counter.textContent = (map[id] ?? 0).toLocaleString();
-            }
+            if(counter) counter.textContent = (map[id] ?? 0).toLocaleString();
         });
-    } catch(e){}
+    } catch(e){
+        console.log("Player API error", e);
+    }
 }
 
 createPlayerBoxes();
@@ -245,4 +242,4 @@ updatePlayerCounts();
 setInterval(updatePlayerCounts,3000);
 </script>
 </body>
-                    </html>
+            </html>
