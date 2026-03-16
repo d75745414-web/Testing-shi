@@ -207,7 +207,7 @@ const PLAYER_API = "https://games.roproxy.com/v1/games?universeIds=";
 
 function createPlayerBoxes(){
     document.querySelectorAll(".gamecard .gamecontent").forEach(content=>{
-        if(content.querySelector(".playerbox"))return;
+        if(content.querySelector(".playerbox")) return;
         const box=document.createElement("div");
         box.className="playerbox";
         box.innerHTML=`<i class="fa-solid fa-users"></i><span class="playercount">0</span><div class="playerdot"></div>`;
@@ -217,19 +217,25 @@ function createPlayerBoxes(){
 
 async function updatePlayerCounts(){
     const cards=document.querySelectorAll(".gamecard[data-universe]");
-    if(cards.length===0)return;
+    if(cards.length===0) return;
     const universeIds=[...new Set(Array.from(cards).map(c=>c.dataset.universe))].filter(id=>/^\d+$/.test(id));
-    if(universeIds.length===0)return;
+    if(universeIds.length===0) return;
+
     try{
-        const res=await fetch(PLAYER_API+universeIds.join(","));
-        const data=await res.json();
-        if(!data.data)return;
+        const res=await fetch(PLAYER_API + universeIds.join(","));
+        const json=await res.json();
+        if(!json.data) return;
         const map={};
-        data.data.forEach(game=>{map[String(game.id)]=game.playing});
+        json.data.forEach(game=>{
+            map[String(game.id)]=game.playing ?? 0;
+        });
+
         cards.forEach(card=>{
             const id=card.dataset.universe;
             const counter=card.querySelector(".playercount");
-            if(counter)counter.textContent=(map[id]??0).toLocaleString();
+            if(counter){
+                counter.textContent=(map[id]??0).toLocaleString();
+            }
         });
     }catch(e){}
 }
@@ -239,4 +245,4 @@ updatePlayerCounts();
 setInterval(updatePlayerCounts,3000);
 </script>
 </body>
-                </html>
+            </html>
