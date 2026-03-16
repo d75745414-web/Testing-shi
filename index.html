@@ -202,7 +202,7 @@ if(localStorage.getItem("currentUser")){document.getElementById("username").text
 if(localStorage.getItem("whitelisted")){unlockGames()}
 document.getElementById("gameSearch").addEventListener("input",function(e){let term=e.target.value.toLowerCase().trim(),cards=document.querySelectorAll(".gamecard"),count=0;cards.forEach(c=>{let title=c.querySelector(".gametitle").textContent.toLowerCase();if(term===""||title.includes(term)){c.classList.add("visible");count++}else{c.classList.remove("visible")}});document.getElementById("gamesCount").textContent=count});
 
-// ==================== PLAYER COUNT SYSTEM (Your Latest Version) ====================
+// ==================== PLAYER COUNT SYSTEM (Using your API) ====================
 const PLAYER_API = "/api/player-counts?universeIds=";
 
 function createPlayerBoxes(){
@@ -245,4 +245,4 @@ updatePlayerCounts();
 setInterval(updatePlayerCounts,3000);
 </script>
 </body>
-                </html>
+                    </html>
