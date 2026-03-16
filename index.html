@@ -232,10 +232,10 @@ async function updatePlayerCounts(){
         const map={};
         data.data.forEach(g=>{ map[g.id]=g.playing; });
 
-        cards.forEach(card=>{
-            const id=card.dataset.universe;
-            const counter=card.querySelector(".playercount");
-            if(counter) counter.textContent=(map[id]??0).toLocaleString();
+        cards.forEach(card => {
+            const id = card.dataset.universe;
+            const counter = card.querySelector(".playercount");
+            if(counter) counter.textContent = (map[Number(id)] ?? 0).toLocaleString();
         });
     }catch(e){
         console.log("Player API error",e);
@@ -244,7 +244,7 @@ async function updatePlayerCounts(){
 
 createPlayerBoxes();
 updatePlayerCounts();
-setInterval(updatePlayerCounts,15000);
+setInterval(updatePlayerCounts, 3000);
 </script>
 </body>
-                                                                                             </html>
+    </html>
